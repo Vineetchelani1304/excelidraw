@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import bcrypt, { hash } from 'bcrypt';
 export const signup = async (req: Request, res: Response) => {

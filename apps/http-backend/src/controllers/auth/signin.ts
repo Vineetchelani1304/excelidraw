@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-dotenv.config();
-const secret = process.env.JWT_SECRET || "mysecret";
+const secret = JWT_SECRET || "mysecret";
 import { Request,Response } from 'express';
+import { JWT_SECRET } from '../../config';
 export const signin =async (req : Request, res : Response) => {
  try {
     const {email, password} = req.body;
@@ -23,6 +23,7 @@ export const signin =async (req : Request, res : Response) => {
         }
     const token = jwt.sign({id: existingUser._id, email: existingUser.email }, secret, { expiresIn: '1h' });
  } catch (error) {
-    
+    res.status(500).json({ message: "Internal server error" });
+    return;
  }    
 }
