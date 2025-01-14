@@ -1,0 +1,17 @@
+{
+  "name": "@repo/backend-common",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./config": "./dist/config.js"
+  },
+  "main": "./dist/index.js",
+  "types": ".index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@repo/typescript-config": "*"
+  }
+}

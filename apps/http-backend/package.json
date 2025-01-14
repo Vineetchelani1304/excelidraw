@@ -2,6 +2,7 @@
   "name": "http-backend",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b",
@@ -18,6 +19,10 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@repo/backend-common": "*",
+    "@repo/typescript-config": "*"
   },
   "keywords": [],
   "author": "",

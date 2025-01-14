@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 const secret = JWT_SECRET || "mysecret";
 import { Request,Response } from 'express';
-import { JWT_SECRET } from '../../config';
+import { JWT_SECRET } from '@repo/backend-common/config';
 export const signin =async (req : Request, res : Response) => {
  try {
     const {email, password} = req.body;

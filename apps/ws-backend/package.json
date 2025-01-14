@@ -2,6 +2,7 @@
   "name": "ws-backend",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b",
@@ -9,6 +10,7 @@
     "dev": "npm run build && npm run start"
   },
   "dependencies": {
+    "@repo/backend-common": "*",
     "@repo/typescript-config": "*",
     "@types/jsonwebtoken": "^9.0.7",
     "jsonwebtoken": "^9.0.2",
@@ -19,6 +21,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@repo/backend-common": "*",
+    "@repo/typescript-config": "*",
     "@types/ws": "^8.5.13"
   }
 }
