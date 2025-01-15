@@ -17,9 +17,9 @@ datasource db {
 model User {
   id        Int     @id @default(autoincrement())
   email     String  @unique
-  name      String?
-  passwords String
-  Photo     String
+  username  String?
+  password  String
+  Photo     String?
   room      Room[]
   chats      Chat[]
 }

@@ -1,4 +1,4 @@
-// import dotenv from 'dotenv';
+import {client}  from "@repo/db/client";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 const secret = JWT_SECRET || "mysecret";
@@ -11,7 +11,7 @@ export const signin =async (req : Request, res : Response) => {
         res.status(400).json({ message: "Please provide all the fields" });
         return;
     }
-    const existingUser = await user.findOne(email);
+    const existingUser = await client.user.findFirst({where: {email}});
     if (!existingUser) {
         res.status(400).json({ message: "User does not exist" });
         return;
@@ -21,7 +21,7 @@ export const signin =async (req : Request, res : Response) => {
             res.status(400).json({ message: "Invalid credentials" });
             return;
         }
-    const token = jwt.sign({id: existingUser._id, email: existingUser.email }, secret, { expiresIn: '1h' });
+    const token = jwt.sign({id: existingUser.id, email: existingUser.email }, secret, { expiresIn: '1h' });
  } catch (error) {
     res.status(500).json({ message: "Internal server error" });
     return;
