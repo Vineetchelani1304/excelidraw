@@ -1,5 +1,6 @@
 import { client } from "@repo/db/client";
 import { Request, Response } from "express";
+import { roomRouter } from "../../routes/room.js";
 
 export const room = async (req: Request, res: Response) => {
     const {slug} = req.body;
@@ -24,4 +25,44 @@ export const room = async (req: Request, res: Response) => {
         console.log(e)
     }
 
+}
+
+
+export const getChats = async (req: Request, res: Response) => {
+    try {
+        const roomId = Number(req.params.roomId);
+        console.log(req.params.roomId);
+        const messages = await client.chat.findMany({
+            where: {
+                roomId: roomId
+            },
+            orderBy: {
+                id: "desc"
+            },
+            take: 50
+        });
+
+        res.json({
+            messages
+        })
+    } catch(e) {
+        console.log(e);
+        res.json({
+            messages: []
+        })
+    }
+    
+}
+
+export const getRooms = async (req:Request, res:Response) => {
+    const slug = req.params.slug;
+    const room = await client.room.findFirst({
+        where: {
+            slug
+        }
+    });
+
+    res.json({
+        room
+    })
 }

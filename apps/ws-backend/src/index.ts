@@ -77,7 +77,6 @@ wss.on('connection', (socket, req: any) => {
                             roomId: parsedMessage.room,
                             userId: parseInt(user.userId),
                         }
-
                     })
 
                     users.forEach((user) => {
