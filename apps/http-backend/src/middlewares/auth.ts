@@ -36,28 +36,34 @@ declare global {
 
 export const auth = (req: Request, res: Response, next: NextFunction): void => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    
+    const token = req.headers.authorization;
+    console.log(token)
+
     if (!token) {
-    res.status(401).json({ message: "No token provided" });
-    return
+      res.status(401).json({ message: "No token provided" });
+      return
     }
 
     const secret = process.env.JWT_SECRET || "mysecret";
-    const decoded = jwt.verify(token, secret) as { id: string }; // type cast the decoded token
+    const decoded = jwt.verify(token, secret) as { id: string };
+    console.log("Token:", token);
+    console.log("Decoded:", decoded);
+    // type cast the decoded token
 
     if (decoded) {
       req.userId = decoded.id; // Attach the userId to the request
       next(); // Proceed to the next middleware or route handler
     } else {
       res.status(401).json({ message: "Unauthorized" });
-      return 
+      return
     }
   } catch (error) {
     res.status(500).json({
       message: "Token validation failed",
       error: error instanceof Error ? error.message : "Unknown error",
     });
-    return 
+    console.error(error);
+
+    return
   }
 };
