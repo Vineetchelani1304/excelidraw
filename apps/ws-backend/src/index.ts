@@ -50,25 +50,9 @@ wss.on('connection', (socket, req: any) => {
             console.log("Received message:", parsedMessage);
             if (parsedMessage.type === "join" && parsedMessage.room) {
                 const user = users.find((user) => user.ws === socket);
-                const existingRoom = await client.room.findUnique({
-                    where: {
-                        id: parsedMessage.room
-                    }
-                })
-                if (existingRoom && user) {
+                if (user) {
                     user.rooms.push(parsedMessage.room);
                     console.log(`User ${user.userId} joined room: ${parsedMessage.room}`);
-                }
-                else if (user && parsedMessage.slug) {
-                    const newRoom = await client.room.create({
-                        data: {
-                            slug: parsedMessage.slug,
-                            adminId: parseInt(userId)
-                        }
-                    })
-
-                    user.rooms.push(newRoom.id.toString());
-                    console.log(`User ${user.userId} joined room: ${newRoom.id} and You are the admin`);
                 }
             }
             if (parsedMessage.type === "ping") {
