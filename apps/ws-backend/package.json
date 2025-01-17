@@ -23,6 +23,7 @@
   "devDependencies": {
     "@repo/backend-common": "*",
     "@repo/typescript-config": "*",
-    "@types/ws": "^8.5.13"
+    "@types/ws": "^8.5.13",
+    "@repo/db": "*"
   }
 }

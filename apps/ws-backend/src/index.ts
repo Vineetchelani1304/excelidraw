@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '@repo/backend-common/config';
-
+import { client } from "@repo/db/client";
 const wss = new WebSocketServer({ port: 3333 });
 
 interface User {
@@ -44,15 +44,31 @@ wss.on('connection', (socket, req: any) => {
         return;
     }
 
-    socket.on('message', (message) => {
+    socket.on('message', async (message) => {
         try {
             const parsedMessage = JSON.parse(message as unknown as string);
             console.log("Received message:", parsedMessage);
             if (parsedMessage.type === "join" && parsedMessage.room) {
                 const user = users.find((user) => user.ws === socket);
-                if (user) {
+                const existingRoom = await client.room.findUnique({
+                    where: {
+                        id: parsedMessage.room
+                    }
+                })
+                if (existingRoom && user) {
                     user.rooms.push(parsedMessage.room);
                     console.log(`User ${user.userId} joined room: ${parsedMessage.room}`);
+                }
+                else if (user && parsedMessage.slug) {
+                    const newRoom = await client.room.create({
+                        data: {
+                            slug: parsedMessage.slug,
+                            adminId: parseInt(userId)
+                        }
+                    })
+
+                    user.rooms.push(newRoom.id.toString());
+                    console.log(`User ${user.userId} joined room: ${newRoom.id} and You are the admin`);
                 }
             }
             if (parsedMessage.type === "ping") {
@@ -70,6 +86,16 @@ wss.on('connection', (socket, req: any) => {
                         return;
                     }
                     const message = parsedMessage.message;
+
+                    await client.chat.create({
+                        data: {
+                            message: parsedMessage.message,
+                            roomId: parsedMessage.room,
+                            userId: parseInt(user.userId),
+                        }
+
+                    })
+
                     users.forEach((user) => {
                         if (user.rooms.includes(parsedMessage.room)) {
                             user.ws.send(JSON.stringify({ type: "chat", room: parsedMessage.room, message: message }));
