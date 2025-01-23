@@ -1,18 +1,21 @@
 "use client";
 import { ws_backend } from "@/config";
 import { useEffect, useState } from "react";
+import { Canvas } from "./Canvas";
 
-export const Canvas = ({ roomId }: { roomId: string }) => {
+export const RoomCanvas = ({ roomId }: { roomId: string }) => {
 
     const [socket, setSocket] = useState<WebSocket | null>(null);
     useEffect(() => {
-        const ws = new WebSocket(`${ws_backend}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ2aW5lZUBnbWFpbC5jb20iLCJpYXQiOjE3Mzc2NDgwNDYsImV4cCI6MTczNzY1MTY0Nn0.p9m319yuuvhTr_wRkZfgy-0Fhw1iwD61KsR7q0OmK-M`)
+        const ws = new WebSocket(`${ws_backend}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ2aW5lZUBnbWFpbC5jb20iLCJpYXQiOjE3Mzc2NjM1MjMsImV4cCI6MTczNzY2NzEyM30.EcW5SMLyWzcMEpoKDJmvo4aq7zZyOlURG56wDR3Vo4Y`)
         ws.onopen = () => {
             setSocket(ws)
-            ws.send(JSON.stringify({
+            const data = JSON.stringify({
                 type: "join",
-                room : roomId
-            }))
+                room:roomId
+            });
+            console.log(data);
+            ws.send(data)
         }
     }, [])
 
@@ -23,8 +26,7 @@ export const Canvas = ({ roomId }: { roomId: string }) => {
             </div>
         )
     }
-    return
-    <div>
-        <Canvas roomId={roomId}  />
-    </div>
+    return <div>
+    <Canvas roomId={roomId} socket={socket} />
+</div>
 };

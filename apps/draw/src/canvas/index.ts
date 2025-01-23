@@ -14,19 +14,21 @@ type Shape = {
     type: "circle"
 }
 
-export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket:WebSocket) {
+export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     const cxt = canvas.getContext("2d");
     const existingShape: Shape[] = await getExistingShape(roomId);
+    console.log("Existing Shapes:", existingShape);
+
     if (!cxt) {
         return;
     }
     cxt.fillStyle = "rgba(0, 0, 0)";
 
-    cxt.strokeStyle = "white"; 
+    cxt.strokeStyle = "white";
 
-    socket.onmessage=(event)=>{
+    socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if(message.type === "chat"){
+        if (message.type === "chat") {
             const parsedMessage = JSON.parse(message.message);
             existingShape.push(parsedMessage);
             clearCanvas(cxt, canvas, existingShape)
@@ -60,7 +62,7 @@ export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket
         console.log("mouse up", e.clientX, e.clientY);
         const width = e.clientX - startx;
         const height = e.clientY - starty;
-        const shape:Shape = {
+        const shape: Shape = {
             type: "rect",
             height,
             width,
@@ -70,8 +72,9 @@ export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket
         existingShape.push(shape)
 
         socket.send(JSON.stringify({
-            type : "chat",
-            message : JSON.stringify(shape)
+            type: "chat",
+            message: JSON.stringify(shape),
+            room: roomId
         }))
     };
 
@@ -86,19 +89,27 @@ export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket
     };
 }
 
-
 export async function getExistingShape(roomId: string) {
     const res = await axios.get(`${http_backend}/v1/chats/${roomId}`);
-    const message = res.data.message;
+    console.log("response",res.data.messages)
+    const message = res.data.messages;
     console.log("message",message)
     const shapes = message.map((x: { message: string }) => {
-        const messagedata = JSON.parse(x.message);
-        return messagedata;
-    })
+        try {
+            const messagedata = JSON.parse(x.message);
+            console.log("Parsed message data:", messagedata);
+            return messagedata.shape || messagedata; // Adjust based on actual structure
+        } catch (error) {
+            console.error("Error parsing message:", x.message, error);
+            return null; // Skip invalid messages
+        }
+    }) // Remove invalid entries
+    console.log("shapes",shapes)
     return shapes;
 }
 
 const clearCanvas = (cxt: CanvasRenderingContext2D, canvas: HTMLCanvasElement, existingShape: Shape[]) => {
+    console.log(existingShape)
     cxt.clearRect(0, 0, canvas.width, canvas.height)
     existingShape.map((shape: Shape) => {
         if (shape.type === "rect") {

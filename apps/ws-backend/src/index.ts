@@ -74,7 +74,7 @@ wss.on('connection', (socket, req: any) => {
                     await client.chat.create({
                         data: {
                             message: parsedMessage.message,
-                            roomId: parsedMessage.room,
+                            roomId: parseInt(parsedMessage.room),
                             userId: parseInt(user.userId),
                         }
                     })

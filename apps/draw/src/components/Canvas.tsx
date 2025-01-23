@@ -1,8 +1,12 @@
 import { initDraw } from "@/canvas";
 import { useEffect, useRef } from "react";
 
-export const Canvas = (socket: WebSocket, {roomId}:{
-    roomId: string
+export const Canvas = ({
+    roomId,
+    socket
+}: {
+    socket: WebSocket;
+    roomId: string;
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -12,7 +16,7 @@ export const Canvas = (socket: WebSocket, {roomId}:{
                 initDraw(canvasRef.current, roomId, socket);
             }
         }
-    }, [canvasRef]);
+    }, [canvasRef, roomId, socket]);
 
     return <div>
         <canvas width="1080" height="1080" ref={canvasRef}></canvas>;
