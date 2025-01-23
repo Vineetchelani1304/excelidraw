@@ -1,1 +1,0 @@
-export const http_backend = "http://localhost:8888"
