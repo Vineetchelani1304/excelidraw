@@ -3,12 +3,44 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Grid, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import axios from "axios"
 
 export default function SignIn() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
+    try {
+      const response = await axios.post("http://localhost:8888/v1/auth/signin", formData)
+      console.log("Response:", response.data)
+      // Redirect the user to the desired page on success (e.g., dashboard)
+    } catch (err) {
+      console.error("Error:", err)
+      // setError(err.response?.data?.message || "An error occurred. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -29,8 +61,7 @@ export default function SignIn() {
           </Link>
         </p>
       </div>
-      <form className="mt-8 space-y-6" action="#" method="POST">
-        <input type="hidden" name="remember" defaultValue="true" />
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div className="rounded-md shadow-sm -space-y-px">
           <div>
             <label htmlFor="email-address" className="sr-only">
@@ -44,6 +75,8 @@ export default function SignIn() {
                 id="email-address"
                 name="email"
                 type="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
@@ -63,6 +96,8 @@ export default function SignIn() {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleInputChange}
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
@@ -85,39 +120,20 @@ export default function SignIn() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-              Remember me
-            </label>
-          </div>
-
-          <div className="text-sm">
-            <a
-              href="#"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              Forgot your password?
-            </a>
-          </div>
-        </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <div>
           <button
             type="submit"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            disabled={loading}
+            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+              loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
         </div>
       </form>
     </>
   )
 }
-

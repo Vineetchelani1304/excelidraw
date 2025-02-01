@@ -1,8 +1,7 @@
 import { http_backend } from "@/config";
 import axios from "axios";
 
-export type Shape =
-    | {
+export type Shape = {
           x: number;
           y: number;
           width: number;
