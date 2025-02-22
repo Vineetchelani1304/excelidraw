@@ -9,7 +9,7 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 app.use(cors()); // Enable CORS for handling cross-origin requests
 
 // Routes
-app.use('/v1/auth', authRouter);
+app.use('/v1', authRouter);
 app.use("/v1", roomRouter); 
 
 // Start the server

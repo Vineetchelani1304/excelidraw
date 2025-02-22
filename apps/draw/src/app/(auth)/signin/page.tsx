@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Grid, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import axios from "axios"
+import { http_backend } from "@/config"
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,7 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -32,13 +35,16 @@ export default function SignIn() {
     setError("")
 
     try {
-      const response = await axios.post("http://localhost:8888/v1/auth/signin", formData)
-      console.log("Response:", response.data)
-      // Redirect the user to the desired page on success (e.g., dashboard)
+      const response = await axios.post(`${http_backend}/signin`, formData)
+      console.log("Response Data:", response.data)
+      localStorage.setItem("token", response.data.token) // Ensure this logs before redirecting
+      alert(JSON.stringify(response.data)) // Temporary alert to verify response
+      console.log("token",response.data.token)
+      router.push("/canvas/")
     } catch (err) {
       console.error("Error:", err)
-      // setError(err.response?.data?.message || "An error occurred. Please try again.")
-    } finally {
+    }
+     finally {
       setLoading(false)
     }
   }
